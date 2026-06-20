@@ -1,98 +1,171 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
+import CounterDisplay from '../../components/ui/CounterButton';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const { width: SW, height: SH } = Dimensions.get('window');
+const scale  = (s: number) => Math.round((SW / 390) * s);
+const vscale = (s: number) => Math.round((SH / 844) * s);
 
-export default function HomeScreen() {
+export default function Index() {
+  const [count, setCount] = useState(100);
+
+  const handleAdd   = () => setCount((prev) => prev + 1);
+  const handleMinus = () => setCount((prev) => prev - 1);
+  const handleReset = () => setCount(100);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.parentWrapper}>
+          {/* Accent bar at top, now a 4-tone sweep matching the gauge palette */}
+          <View style={styles.accentBar}>
+            <View style={[styles.swatch, { backgroundColor: '#22D3EE' }]} />
+            <View style={[styles.swatch, { backgroundColor: '#3B82F6' }]} />
+            <View style={[styles.swatch, { backgroundColor: '#A855F7' }]} />
+            <View style={[styles.swatch, { backgroundColor: '#F43F5E' }]} />
+          </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+          {/* Badge */}
+          <View style={styles.parentBadge}>
+            <Text style={styles.parentBadgeText}>SPEED MANAGEMENT APP</Text>
+          </View>
+
+          <View style={styles.parentBody}>
+            <Text style={styles.parentTitle}>MANAGE SPEED </Text>
+
+            {/* State Locker, redesigned as a telemetry readout row */}
+            <View style={styles.stateLocker}>
+              <View style={styles.stateLockerHeader}>
+                <Text style={styles.stateLockerLabel}>STATE LOCKER</Text>
+                <View style={styles.statusDot} />
+              </View>
+              <View style={styles.stateLockerDivider} />
+              <Text style={styles.stateLockerValue}>{count}</Text>
+              <Text style={styles.stateLockerSub}>count (held in useState)</Text>
+            </View>
+
+            <CounterDisplay
+              count={count}
+              onAdd={handleAdd}
+              onMinus={handleMinus}
+              onReset={handleReset}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#05070D',
+  },
+  scroll: {
+    padding: scale(20),
+    paddingBottom: vscale(40),
+    alignItems: 'center',
+    flexGrow: 1,
+  },
+  parentWrapper: {
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: '#2563EB',
+    borderRadius: scale(24),
+    overflow: 'hidden',
+    marginTop: vscale(16),
+  },
+  accentBar: {
+    flexDirection: 'row',
+    width: '40%',
+    height: 3,
+    alignSelf: 'center',
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+    overflow: 'hidden',
+  },
+  swatch: { flex: 1 },
+  parentBadge: {
+    alignSelf: 'center',
+    backgroundColor: '#2563EB',
+    borderRadius: scale(20),
+    paddingHorizontal: scale(14),
+    paddingVertical: vscale(5),
+    marginTop: vscale(12),
+  },
+  parentBadgeText: {
+    color: '#BFDBFE',
+    fontWeight: '800',
+    fontSize: scale(11),
+    letterSpacing: 0.5,
+  },
+  parentBody: {
+    backgroundColor: '#0B1220',
+    padding: scale(18),
+    paddingTop: vscale(14),
+  },
+  parentTitle: {
+    fontSize: scale(20),
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: vscale(14),
+    color: '#F0F6FF',
+    letterSpacing: 0.3,
+  },
+  stateLocker: {
+    backgroundColor: '#0F172A',
+    borderRadius: scale(14),
+    paddingVertical: vscale(14),
+    paddingHorizontal: scale(16),
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#1E3A5F',
+  },
+  stateLockerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: scale(6),
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  stateLockerLabel: {
+    color: '#60A5FA',
+    fontSize: scale(10),
+    fontWeight: '800',
+    letterSpacing: 2,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  statusDot: {
+    width: scale(6),
+    height: scale(6),
+    borderRadius: scale(3),
+    backgroundColor: '#22D3EE',
+  },
+  stateLockerDivider: {
+    width: scale(32),
+    height: 1,
+    backgroundColor: 'rgba(96,165,250,0.3)',
+    marginVertical: vscale(6),
+  },
+  stateLockerValue: {
+    color: '#fff',
+    fontSize: scale(32),
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  stateLockerSub: {
+    color: '#475569',
+    fontSize: scale(10),
+    fontWeight: '600',
+    marginTop: vscale(3),
+    letterSpacing: 0.3,
   },
 });
